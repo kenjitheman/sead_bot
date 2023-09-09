@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	isBotRunning  bool
-	creatorChatID int64
+	isBotRunning     bool
+	creatorChatID    int64
+	creatorChatIDStr string
 )
 
 var ukrainianCommands = map[string]string{
@@ -21,6 +22,7 @@ var ukrainianCommands = map[string]string{
 	"Підтримка":      "support",
 	"Контакти":       "contacts",
 	"Заява на вступ": "application_form",
+	"Питання":        "questions",
 	"Стоп":           "stop",
 	"Старт":          "start",
 }
@@ -46,6 +48,7 @@ func Start() {
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Контакти"),
+			tgbotapi.NewKeyboardButton("Питання"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Заява на вступ"),
@@ -79,29 +82,22 @@ func Start() {
 					if !isBotRunning {
 						isBotRunning = true
 						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
-						msg.Text = okEmoji + " вже працюю"
+						msg.Text = okEmoji + " Вже працюю"
 						msg.ReplyMarkup = generalKeyboard
 					} else {
-						msg.Text = "бот вже запущений\nСтоп - зупинити бота"
+						msg.Text = "Бот вже запущений\nСтоп - зупинити бота"
 					}
 
 				case "help":
 					if isBotRunning {
 						infoEmoji := emoji.Sprintf("%v", emoji.Information)
-						msg.Text = infoEmoji + " Підказки\n\n Допомога - щоб отримати всі команди\n Старт - запустити бота\n Стоп - зупинити бота\n Контакти - отримати контактну інформацію ключових членів клубу\n Заява на вступ - отримати посилання на форму (онлайн-заявку на вступ до клубу)\n Підтримка - щоб повідомити про знайдені помилки"
+						msg.Text = infoEmoji + " Підказки\n\n Допомога - отримати всі команди\n Старт - запустити бота\n Стоп - зупинити бота\n Контакти - отримати контактну інформацію ключових членів клубу\n Заява на вступ - отримати посилання на форму (онлайн-заявку на вступ до клубу)\n Підтримка - повідомити про знайдені помилки\n\n Питання - задати питання і отримати відповідь від адміністратора"
 						msg.ReplyMarkup = generalKeyboard
 					}
 
 				case "contacts":
 					if isBotRunning {
-						infinityEmoji := emoji.Sprintf("%v", emoji.Infinity)
-						contactInfo := `
-              Президент: @kenjitheman
-              Віце-президент: [contact info]
-              Секретар: [contact info]
-              Скарбник: [contact info]
-                    `
-						msg.Text = infinityEmoji + " " + contactInfo
+						msg.Text = "Президент: @kenjitheman\nВіце-президент: [contact info]\nСекретар: [contact info]\nСкарбник: [contact info]"
 						msg.ReplyMarkup = generalKeyboard
 					}
 
@@ -117,13 +113,13 @@ func Start() {
 					if isBotRunning {
 						isBotRunning = false
 						stopEmoji := emoji.Sprintf("%v", emoji.RedCircle)
-						msg.Text = stopEmoji + " зупинився"
+						msg.Text = stopEmoji + " Зупинився"
 						msg.ReplyMarkup = startKeyboard
 					} else {
-						msg.Text = "бот вже зупинений\nСтарт - запустити бота"
+						msg.Text = "Бот вже зупинений\nСтарт - запустити бота"
 					}
 
-				case "support":
+				case "questions":
 					if isBotRunning {
 						cactusEmoji := emoji.Sprintf("%v", emoji.Cactus)
 						creatorChatIDStr := os.Getenv("CREATOR_CHAT_ID")
@@ -131,7 +127,7 @@ func Start() {
 						if err != nil {
 							log.Panic(err)
 						}
-						msg.Text = cactusEmoji + " будь ласка, опишіть проблему:"
+						msg.Text = cactusEmoji + " Будь ласка, введіть ваше запитання:"
 						bot.Send(msg)
 
 						response := <-updates
@@ -141,7 +137,39 @@ func Start() {
 							}
 							description := response.Message.Text
 							GreenHeartEmoji := emoji.Sprintf("%v", emoji.GreenHeart)
-							msg.Text = GreenHeartEmoji + " дякую за звіт про помилку!"
+							msg.Text = GreenHeartEmoji + " Ми надамо відповідь якнайшвидше!"
+							supportMsg := tgbotapi.NewMessage(
+								creatorChatID,
+								fmt.Sprintf(
+									"Запитання від користувача %s:\n%s",
+									update.Message.From.UserName,
+									description,
+								),
+							)
+							bot.Send(supportMsg)
+						}
+					} else {
+						msg.Text = "Бот вже зупинений.\nСтарт - запустити бота."
+					}
+				case "support":
+					if isBotRunning {
+						cactusEmoji := emoji.Sprintf("%v", emoji.Cactus)
+						creatorChatIDStr = os.Getenv("CREATOR_CHAT_ID")
+						creatorChatID, err = strconv.ParseInt(creatorChatIDStr, 10, 64)
+						if err != nil {
+							log.Panic(err)
+						}
+						msg.Text = cactusEmoji + " Будь ласка, опишіть проблему:"
+						bot.Send(msg)
+
+						response := <-updates
+						if response.Message != nil {
+							if response.Message.Chat.ID != update.Message.Chat.ID {
+								continue
+							}
+							description := response.Message.Text
+							GreenHeartEmoji := emoji.Sprintf("%v", emoji.GreenHeart)
+							msg.Text = GreenHeartEmoji + " Дякую за звіт про помилку!"
 							supportMsg := tgbotapi.NewMessage(
 								creatorChatID,
 								fmt.Sprintf(
@@ -153,13 +181,13 @@ func Start() {
 							bot.Send(supportMsg)
 						}
 					} else {
-						msg.Text = "бот вже зупинений\nСтарт - запустити бота"
+						msg.Text = "Бот вже зупинений\nСтарт - запустити бота"
 					}
 
 				default:
 					if isBotRunning {
 						idkEmoji := emoji.Sprintf("%v", emoji.OpenHands)
-						msg.Text = idkEmoji + " вибачте, але я вас не розумію\n/help"
+						msg.Text = idkEmoji + " Вибачте, але я вас не розумію\nДопомога - отримати всі команди"
 					}
 				}
 
