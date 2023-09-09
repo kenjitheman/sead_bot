@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/enescakir/emoji"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -15,6 +16,8 @@ var (
 	isBotRunning     bool
 	creatorChatID    int64
 	creatorChatIDStr string
+	websiteUrl       string
+	channelUrl       string
 )
 
 var ukrainianCommands = map[string]string{
@@ -23,6 +26,7 @@ var ukrainianCommands = map[string]string{
 	"Контакти":       "contacts",
 	"Заява на вступ": "application_form",
 	"Питання":        "questions",
+	"Ми в мережі":    "socials",
 	"Стоп":           "stop",
 	"Старт":          "start",
 }
@@ -52,6 +56,7 @@ func Start() {
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Заява на вступ"),
+			tgbotapi.NewKeyboardButton("Ми в мережі"),
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Стоп"),
@@ -61,6 +66,13 @@ func Start() {
 	startKeyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Старт"),
+		),
+	)
+
+	socialsKeyboard := tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Канал"),
+			tgbotapi.NewKeyboardButton("Вебсайт"),
 		),
 	)
 
@@ -91,7 +103,7 @@ func Start() {
 				case "help":
 					if isBotRunning {
 						infoEmoji := emoji.Sprintf("%v", emoji.Information)
-						msg.Text = infoEmoji + " Підказки\n\n Допомога - отримати всі команди\n Старт - запустити бота\n Стоп - зупинити бота\n Контакти - отримати контактну інформацію ключових членів клубу\n Заява на вступ - отримати посилання на форму (онлайн-заявку на вступ до клубу)\n Підтримка - повідомити про знайдені помилки\n\n Питання - задати питання і отримати відповідь від адміністратора"
+						msg.Text = infoEmoji + " Підказки\n\n Допомога - отримати всі команди\n Старт - запустити бота\n Стоп - зупинити бота\n Контакти - отримати контактну інформацію ключових членів клубу\n Заява на вступ - отримати посилання на форму (онлайн-заявку на вступ до клубу)\n Канал - отримати посилання на telegram kанал клубу\n Вебсайт - отримати посилання на вебсайт клубу\n Підтримка - повідомити про знайдені помилки\n\n Питання - задати питання і отримати відповідь від адміністратора"
 						msg.ReplyMarkup = generalKeyboard
 					}
 
@@ -107,6 +119,51 @@ func Start() {
 						infinityEmoji := emoji.Sprintf("%v", emoji.Infinity)
 						msg.Text = infinityEmoji + " " + applicationFormUrl
 						msg.ReplyMarkup = generalKeyboard
+					}
+
+				case "channel":
+					if isBotRunning {
+						channelUrl = os.Getenv("CHANNEL_URL")
+						infinityEmoji := emoji.Sprintf("%v", emoji.Infinity)
+						msg.Text = infinityEmoji + " " + channelUrl
+						msg.ReplyMarkup = generalKeyboard
+					}
+
+				case "socials":
+					if isBotRunning {
+						msg.ReplyMarkup = socialsKeyboard
+						msg.Text = "Будь ласка, виберіть варіант:"
+						_, err := bot.Send(msg)
+						if err != nil {
+							fmt.Printf("[ERROR] error sending message: %v\n", err)
+							return
+						}
+
+						select {
+						case response := <-updates:
+							if response.Message != nil &&
+								response.Message.Chat.ID == update.Message.Chat.ID {
+								take := response.Message.Text
+								infinityEmoji := emoji.Sprintf("%v", emoji.Infinity)
+
+								switch take {
+								case "Канал":
+									channelURL := os.Getenv("CHANNEL_URL")
+									msg.Text = infinityEmoji + " " + channelURL
+								case "Вебсайт":
+									websiteURL := os.Getenv("WEBSITE_URL")
+									msg.Text = infinityEmoji + " " + websiteURL
+								default:
+									idkEmoji := emoji.Sprintf("%v", emoji.OpenHands)
+									msg.Text = idkEmoji + " Вибачте, але я вас не розумію\nДопомога - отримати всі команди"
+								}
+
+								msg.ReplyMarkup = generalKeyboard
+							}
+						case <-time.After(30 * time.Second): // Set a timeout for user response
+							msg.Text = "Відповіді не отримано.\nСпробуйте пізніше."
+							msg.ReplyMarkup = generalKeyboard
+						}
 					}
 
 				case "stop":
