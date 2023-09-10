@@ -10,6 +10,23 @@
 
 ###
 
+## project structure
+
+```
+.
+├── cmd
+│   └── main.go
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── README.md
+├── LICENSE
+├── .gitignore
+└── tg
+    └── tg.go
+
+```
+
 ## installation
 
 ```
