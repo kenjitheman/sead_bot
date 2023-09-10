@@ -29,6 +29,7 @@ var ukrainianCommands = map[string]string{
 	"Ми в мережі":    "socials",
 	"Стоп":           "stop",
 	"Старт":          "start",
+	"/start":					"/start",
 }
 
 func Start() {
@@ -99,7 +100,15 @@ func Start() {
 					} else {
 						msg.Text = "Бот вже запущений\nСтоп - зупинити бота"
 					}
-
+				case "/start":
+					if !isBotRunning {
+						isBotRunning = true
+						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
+						msg.Text = okEmoji + " Вже працюю"
+						msg.ReplyMarkup = generalKeyboard
+					} else {
+						msg.Text = "Бот вже запущений\nСтоп - зупинити бота"
+					}
 				case "help":
 					if isBotRunning {
 						infoEmoji := emoji.Sprintf("%v", emoji.Information)
