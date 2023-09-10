@@ -169,7 +169,7 @@ func Start() {
 
 								msg.ReplyMarkup = generalKeyboard
 							}
-						case <-time.After(30 * time.Second): // Set a timeout for user response
+						case <-time.After(30 * time.Second):
 							msg.Text = "Відповіді не отримано.\nСпробуйте пізніше."
 							msg.ReplyMarkup = generalKeyboard
 						}
@@ -207,7 +207,7 @@ func Start() {
 							supportMsg := tgbotapi.NewMessage(
 								creatorChatID,
 								fmt.Sprintf(
-									"Запитання від користувача %s:\n%s",
+									"Запитання від користувача @%s:\n%s",
 									update.Message.From.UserName,
 									description,
 								),
@@ -239,7 +239,7 @@ func Start() {
 							supportMsg := tgbotapi.NewMessage(
 								creatorChatID,
 								fmt.Sprintf(
-									" bug report from user %s:\n%s",
+									" bug report from user @%s:\n%s",
 									update.Message.From.UserName,
 									description,
 								),
