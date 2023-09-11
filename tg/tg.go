@@ -25,7 +25,7 @@ var ukrainianCommands = map[string]string{
 	"Контакти":               "contacts",
 	"Заява на вступ":         "application_form",
 	"Питання":                "questions",
-	"Ми в мережі":            "socials", // TODO | if user's input is in ukrainianCommands -> ignore it
+	"Ми в мережі":            "socials",
 	"Стоп":                   "stop",
 	"Старт":                  "start",
 	"/start":                 "/start",
@@ -90,7 +90,8 @@ func Start() {
 						msg.Text = okEmoji + " Вже працюю"
 						msg.ReplyMarkup = generalKeyboard
 					} else {
-						msg.Text = "Бот вже запущений\nСтоп - зупинити бота"
+						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
+						msg.Text = okEmoji + " Бот вже запущений\nСтоп - зупинити бота"
 					}
 
 				case "/start":
@@ -186,6 +187,7 @@ func Start() {
 						bot.Send(msg)
 
 						response := <-updates
+
 						if response.Message != nil {
 							if response.Message.Chat.ID != update.Message.Chat.ID {
 								continue
