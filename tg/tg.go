@@ -69,6 +69,12 @@ func Start() {
 		),
 	)
 
+	backKeyboard := tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("Назад"),
+		),
+	)
+
 	log.Printf("[SUCCESS] authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
@@ -143,47 +149,27 @@ func Start() {
 						msg.Text = "Бот вже зупинений\nСтарт - запустити бота"
 					}
 
-				case "questions":
+				case "questions", "support":
 					if isBotRunning {
 						cactusEmoji := emoji.Sprintf("%v", emoji.Cactus)
+						greenHeartEmoji := emoji.Sprintf("%v", emoji.GreenHeart)
 						creatorChatIDStr := os.Getenv("CREATOR_CHAT_ID")
 						creatorChatID, err = strconv.ParseInt(creatorChatIDStr, 10, 64)
 						if err != nil {
 							log.Panic(err)
 						}
-						msg.Text = cactusEmoji + " Будь ласка, введіть ваше запитання:"
-						bot.Send(msg)
+						msg.ReplyMarkup = backKeyboard
 
-						response := <-updates
-						if response.Message != nil {
-							if response.Message.Chat.ID != update.Message.Chat.ID {
-								continue
-							}
-							description := response.Message.Text
-							GreenHeartEmoji := emoji.Sprintf("%v", emoji.GreenHeart)
-							msg.Text = GreenHeartEmoji + " Ми надамо відповідь якнайшвидше!"
-							supportMsg := tgbotapi.NewMessage(
-								creatorChatID,
-								fmt.Sprintf(
-									"Запитання від користувача @%s:\n%s",
-									update.Message.From.UserName,
-									description,
-								),
-							)
-							bot.Send(supportMsg)
+						initialMessage := cactusEmoji
+						afterMessage := greenHeartEmoji
+						if command == "questions" {
+							initialMessage += " Будь ласка, введіть ваше запитання:"
+							afterMessage += " Ми надамо відповідь якнайшвидше!"
+						} else if command == "support" {
+							initialMessage += " Будь ласка, опишіть проблему:"
+							afterMessage += " Дякую за звіт про помилку!"
 						}
-					} else {
-						msg.Text = "Бот вже зупинений.\nСтарт - запустити бота."
-					}
-				case "support":
-					if isBotRunning {
-						cactusEmoji := emoji.Sprintf("%v", emoji.Cactus)
-						creatorChatIDStr = os.Getenv("CREATOR_CHAT_ID")
-						creatorChatID, err = strconv.ParseInt(creatorChatIDStr, 10, 64)
-						if err != nil {
-							log.Panic(err)
-						}
-						msg.Text = cactusEmoji + " Будь ласка, опишіть проблему:"
+						msg.Text = initialMessage
 						bot.Send(msg)
 
 						response := <-updates
@@ -193,17 +179,33 @@ func Start() {
 								continue
 							}
 							description := response.Message.Text
-							GreenHeartEmoji := emoji.Sprintf("%v", emoji.GreenHeart)
-							msg.Text = GreenHeartEmoji + " Дякую за звіт про помилку!"
-							supportMsg := tgbotapi.NewMessage(
-								creatorChatID,
-								fmt.Sprintf(
-									" bug report from user @%s:\n%s",
-									update.Message.From.UserName,
-									description,
-								),
-							)
-							bot.Send(supportMsg)
+							if description == "Назад" {
+								msg.ReplyMarkup = generalKeyboard
+							} else {
+								var supportMsg tgbotapi.MessageConfig
+								if command == "questions" {
+									supportMsg = tgbotapi.NewMessage(
+										creatorChatID,
+										fmt.Sprintf(
+											"Запитання від користувача @%s:\n%s",
+											update.Message.From.UserName,
+											description,
+										),
+									)
+								} else if command == "support" {
+									supportMsg = tgbotapi.NewMessage(
+										creatorChatID,
+										fmt.Sprintf(
+											"Звіт про помилку від користувача @%s:\n%s",
+											update.Message.From.UserName,
+											description,
+										),
+									)
+								}
+								msg.Text = afterMessage
+								bot.Send(supportMsg)
+								msg.ReplyMarkup = generalKeyboard
+							}
 						}
 					} else {
 						msg.Text = "Бот вже зупинений\nСтарт - запустити бота"
