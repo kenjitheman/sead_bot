@@ -89,7 +89,7 @@ func Start() {
 
 			if command, ok := ukrainianCommands[userInput]; ok {
 				switch command {
-				case "start":
+				case "start", "/start":
 					if !isBotRunning {
 						isBotRunning = true
 						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
@@ -98,16 +98,6 @@ func Start() {
 					} else {
 						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
 						msg.Text = okEmoji + " Бот вже запущений\nСтоп - зупинити бота"
-					}
-
-				case "/start":
-					if !isBotRunning {
-						isBotRunning = true
-						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
-						msg.Text = okEmoji + " Вже працюю"
-						msg.ReplyMarkup = generalKeyboard
-					} else {
-						msg.Text = "Бот вже запущений\nСтоп - зупинити бота"
 					}
 
 				case "help":
