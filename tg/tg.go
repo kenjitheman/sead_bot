@@ -169,7 +169,9 @@ func Start() {
 								continue
 							}
 							description := response.Message.Text
+
 							if description == "Назад" {
+								msg.Text = "перехід до головного меню..."
 								msg.ReplyMarkup = generalKeyboard
 							} else {
 								var supportMsg tgbotapi.MessageConfig
@@ -182,7 +184,8 @@ func Start() {
 											description,
 										),
 									)
-								} else if command == "support" {
+								}
+								if command == "support" {
 									supportMsg = tgbotapi.NewMessage(
 										creatorChatID,
 										fmt.Sprintf(
@@ -196,6 +199,7 @@ func Start() {
 								bot.Send(supportMsg)
 								msg.ReplyMarkup = generalKeyboard
 							}
+
 						}
 					} else {
 						msg.Text = "Бот вже зупинений\nСтарт - запустити бота"
