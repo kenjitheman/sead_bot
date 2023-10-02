@@ -24,13 +24,12 @@
 ├── .gitignore
 └── tg
     └── tg.go
-
 ```
 
 ## installation
 
 ```
-git clone https://github.com/kenjitheman/sead_bot
+git clone https://github.com/kenjitheman/seadclub_bot
 ```
 
 ## usage
@@ -53,9 +52,9 @@ docker build -t your_image_name .
 docker run -d -p 8080:80 your_image_name
 ```
 
-- run it withot docker:
+- run it without docker:
     - create .env file with env variables
-        - you need to uncomment the following lines in tg module:
+        - you need to UNCOMMENT the following lines in tg module:
 
 ```
 // "github.com/joho/godotenv"
