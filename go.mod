@@ -1,4 +1,4 @@
-module github.com/kenjitheman/seadclub_bot
+module github.com/kenjitheman/seadclub-bot
 
 go 1.20
 
