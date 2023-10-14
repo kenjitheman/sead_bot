@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kenjitheman/seadclub_bot/tg"
+	"github.com/kenjitheman/seadclub-bot/tg"
 )
 
 func main() {
