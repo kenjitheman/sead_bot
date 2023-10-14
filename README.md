@@ -29,7 +29,7 @@
 ## installation
 
 ```
-git clone https://github.com/kenjitheman/seadclub_bot
+git clone https://github.com/kenjitheman/seadclub-bot
 ```
 
 ## usage
