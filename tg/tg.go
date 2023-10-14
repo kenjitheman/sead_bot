@@ -8,7 +8,7 @@ import (
 
 	"github.com/enescakir/emoji"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	//"github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -32,11 +32,11 @@ var ukrainianCommands = map[string]string{
 }
 
 func Start() {
-	//err := godotenv.Load(".env")
-	//if err != nil {
-	//	fmt.Println("[ERROR] error loading .env file")
-	//	log.Panic(err)
-	//}
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("[ERROR] error loading .env file")
+		log.Panic(err)
+	}
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_API_TOKEN"))
 	if err != nil {
 		log.Panic(err)
@@ -45,7 +45,7 @@ func Start() {
 	bot.Debug = true
 	isBotRunning = false
 
-	generalKeyboard := tgbotapi.NewReplyKeyboard(
+	GeneralKeyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Допомога"),
 			tgbotapi.NewKeyboardButton("Заява на вступ"),
@@ -63,13 +63,13 @@ func Start() {
 		),
 	)
 
-	startKeyboard := tgbotapi.NewReplyKeyboard(
+	StartKeyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Старт"),
 		),
 	)
 
-	backKeyboard := tgbotapi.NewReplyKeyboard(
+	BackKeyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton("Назад"),
 		),
@@ -94,7 +94,7 @@ func Start() {
 						isBotRunning = true
 						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
 						msg.Text = okEmoji + " Вже працюю"
-						msg.ReplyMarkup = generalKeyboard
+						msg.ReplyMarkup = GeneralKeyboard
 					} else {
 						okEmoji := emoji.Sprintf("%v", emoji.GreenCircle)
 						msg.Text = okEmoji + " Бот вже запущений\nСтоп - зупинити бота"
@@ -104,13 +104,13 @@ func Start() {
 					if isBotRunning {
 						infoEmoji := emoji.Sprintf("%v", emoji.Information)
 						msg.Text = infoEmoji + " Підказки\n\n+ Допомога - отримати всі команди\n+ Старт - запустити бота\n+ Стоп - зупинити бота\n+ Контакти - отримати контактну інформацію ключових членів клубу\n+ Заява на вступ - отримати посилання на форму (онлайн-заявку на вступ до клубу)\n+ Ми в мережі - отримати посилання на нас в мережі\n+ Повідомити про помилку - повідомити про знайдені помилки\n+ Питання - задати питання і отримати відповідь від адміністратора"
-						msg.ReplyMarkup = generalKeyboard
+						msg.ReplyMarkup = GeneralKeyboard
 					}
 
 				case "contacts":
 					if isBotRunning {
 						msg.Text = "Президент: @kenjitheman\nВіце-президент: @ya_code"
-						msg.ReplyMarkup = generalKeyboard
+						msg.ReplyMarkup = GeneralKeyboard
 					}
 
 				case "application_form":
@@ -118,15 +118,14 @@ func Start() {
 						applicationFormUrl := os.Getenv("GOOGLE_FORM_URL")
 						infinityEmoji := emoji.Sprintf("%v", emoji.Infinity)
 						msg.Text = infinityEmoji + " " + applicationFormUrl
-						msg.ReplyMarkup = generalKeyboard
+						msg.ReplyMarkup = GeneralKeyboard
 					}
 
 				case "socials":
 					if isBotRunning {
 						websiteUrl := os.Getenv("WEBSITE_URL")
-						channelUrl := os.Getenv("CHANNEL_URL")
-						msg.Text = "Вебсайт: " + websiteUrl + "\nКанал: " + channelUrl
-						msg.ReplyMarkup = generalKeyboard
+						msg.Text = "Вебсайт: " + websiteUrl
+						msg.ReplyMarkup = GeneralKeyboard
 					}
 
 				case "stop":
@@ -134,7 +133,7 @@ func Start() {
 						isBotRunning = false
 						stopEmoji := emoji.Sprintf("%v", emoji.RedCircle)
 						msg.Text = stopEmoji + " Зупинився"
-						msg.ReplyMarkup = startKeyboard
+						msg.ReplyMarkup = StartKeyboard
 					} else {
 						msg.Text = "Бот вже зупинений\nСтарт - запустити бота"
 					}
@@ -148,7 +147,7 @@ func Start() {
 						if err != nil {
 							log.Panic(err)
 						}
-						msg.ReplyMarkup = backKeyboard
+						msg.ReplyMarkup = BackKeyboard
 
 						initialMessage := cactusEmoji
 						afterMessage := greenHeartEmoji
@@ -172,7 +171,7 @@ func Start() {
 
 							if description == "Назад" {
 								msg.Text = "перехід до головного меню..."
-								msg.ReplyMarkup = generalKeyboard
+								msg.ReplyMarkup = GeneralKeyboard
 							} else {
 								var supportMsg tgbotapi.MessageConfig
 								if command == "questions" {
@@ -197,7 +196,7 @@ func Start() {
 								}
 								msg.Text = afterMessage
 								bot.Send(supportMsg)
-								msg.ReplyMarkup = generalKeyboard
+								msg.ReplyMarkup = GeneralKeyboard
 							}
 
 						}
