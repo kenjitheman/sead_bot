@@ -124,8 +124,7 @@ func Start() {
 				case "socials":
 					if isBotRunning {
 						websiteUrl := os.Getenv("WEBSITE_URL")
-						channelUrl := os.Getenv("CHANNEL_URL")
-						msg.Text = "Вебсайт: " + websiteUrl + "\nКанал: " + channelUrl
+						msg.Text = "Вебсайт: " + websiteUrl
 						msg.ReplyMarkup = generalKeyboard
 					}
 
