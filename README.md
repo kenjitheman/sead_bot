@@ -12,7 +12,7 @@
 
 ## project structure
 
-```
+```go
 .
 ├── cmd
 │   └── main.go
@@ -28,7 +28,7 @@
 
 ## installation
 
-```
+```sh
 git clone https://github.com/kenjitheman/seadclub-bot
 ```
 
@@ -37,7 +37,7 @@ git clone https://github.com/kenjitheman/seadclub-bot
 - run it using docker:
     - you need to paste your api keys in dockerfile:
 
-```
+```ENV
 ENV TELEGRAM_API_TOKEN=YOUR_API_TOKEN
 ENV CREATOR_CHAT_ID=YOUR_CHAT_ID
 ENV GOOGLE_FORM_URL=YOUR_URL
@@ -47,7 +47,7 @@ ENV CHANNEL_URL=YOUR_URL
 
 - run it:
 
-```
+```sh
 docker build -t your_image_name .
 docker run -d -p 8080:80 your_image_name
 ```
@@ -56,11 +56,11 @@ docker run -d -p 8080:80 your_image_name
     - create .env file with env variables
         - you need to UNCOMMENT the following lines in tg module:
 
-```
+```go
 // "github.com/joho/godotenv"
 ```
 
-```
+```go
 // err := godotenv.Load("../.env")
 // if err != nil {
 // 	fmt.Println("[ERROR] error loading .env file")
@@ -70,7 +70,7 @@ docker run -d -p 8080:80 your_image_name
 
 - run it:
 
-```
+```sh
 go run cmd/main.go
 ```
 
