@@ -14,16 +14,16 @@
 
 ```go
 .
-├── cmd
-│   └── main.go
+├── bot
+│   ├── bot.go
+│   ├── keyboards.go
+│   └── vars.go
 ├── Dockerfile
 ├── go.mod
 ├── go.sum
-├── README.md
 ├── LICENSE
-├── .gitignore
-└── tg
-    └── tg.go
+├── main.go
+└── README.md
 ```
 
 ## installation
@@ -39,10 +39,6 @@ git clone https://github.com/kenjitheman/seadclub-bot
 
 ```ENV
 ENV TELEGRAM_API_TOKEN=YOUR_API_TOKEN
-ENV CREATOR_CHAT_ID=YOUR_CHAT_ID
-ENV GOOGLE_FORM_URL=YOUR_URL
-ENV SITE_URL=YOUR_URL
-ENV CHANNEL_URL=YOUR_URL
 ```
 
 - run it:
@@ -53,8 +49,8 @@ docker run -d -p 8080:80 your_image_name
 ```
 
 - run it without docker:
-    - create .env file with env variables
-        - you need to UNCOMMENT the following lines in tg module:
+    - you need to **create .env file** with env variables
+        - and you need to **UNCOMMENT** the following lines in bot.tg:
 
 ```go
 // "github.com/joho/godotenv"
@@ -71,7 +67,7 @@ docker run -d -p 8080:80 your_image_name
 - run it:
 
 ```sh
-go run cmd/main.go
+go run main.go
 ```
 
 ## contributing
