@@ -7,14 +7,9 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/joho/godotenv"
 )
 
 func Start() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Panic(err)
-	}
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_API_TOKEN"))
 	if err != nil {
 		log.Panic(err)
