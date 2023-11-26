@@ -1,4 +1,4 @@
-<h3 align="center">software engineering and development club's tg bot</h3>
+# SEAD Club's helper tg bot
 
 ###
 
@@ -10,7 +10,7 @@
 
 ###
 
-## project structure
+## Project structure
 
 ```go
 .
@@ -26,31 +26,31 @@
 └── README.md
 ```
 
-## installation
+## Installation
 
 ```sh
 git clone https://github.com/seadclub/seadclub-bot
 ```
 
-## usage
+## Usage
 
-- run it using docker:
-    - you need to paste your api keys in dockerfile:
+- Run it using docker:
+    - You need to paste your api keys in Dockerfile:
 
-```ENV
+```env
 ENV TELEGRAM_API_TOKEN=YOUR_API_TOKEN
 ```
 
-- run it:
+- Run it:
 
 ```sh
 docker build -t your_image_name .
 docker run -d -p 8080:80 your_image_name
 ```
 
-- run it without docker:
-    - you need to **create .env file** with env variables
-        - and you need to **UNCOMMENT** the following lines in bot.tg:
+- Run it without docker:
+    - You need to **create .env file** with env variables
+        - And you need to **UNCOMMENT** the following lines in bot.tg:
 
 ```go
 // "github.com/joho/godotenv"
@@ -64,17 +64,17 @@ docker run -d -p 8080:80 your_image_name
 // }
 ```
 
-- run it:
+- Run it:
 
 ```sh
 go run main.go
 ```
 
-## contributing
+## Contributing
 
-- pull requests are welcome, for major changes, please open an issue first to
-  discuss what you would like to change
+- Pull requests are welcome, for major changes, please open an issue first to
+  discuss what you would like to change.
 
-## license
+## License
 
 - [MIT](https://choosealicense.com/licenses/mit)
